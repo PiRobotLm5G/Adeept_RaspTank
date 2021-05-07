@@ -92,7 +92,7 @@ class sensor:
         
     def get_sensor_status(self):
         self.__WriteByte(self.addr,VL6180X_SYSRANGE_START, 0x01) #0x03 renzoku
-        time.sleep(0.01)
+        time.sleep(0.01)  # 待ち時間が短くて治す予定の行のはず。
         distance = self.__read(self.addr,VL6180X_RESULT_RANGE_VAL)
         self.__WriteByte(self.addr,VL6180X_SYSTEM_INTERRUPT_CLEAR, 0x07)
         return distance
