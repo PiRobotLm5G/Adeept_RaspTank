@@ -32,17 +32,17 @@ class switch:
  
  
 if __name__ == "__main__":
-    GPIO.setmode(GPIO.BCM)
-    switch_1 = 20
-    switch_2 = 26
-    out_num = 19
+	GPIO.setmode(GPIO.BCM)
+	switch_1 = 20
+	switch_2 = 26
+	out_num = 19
 	init_switch_output(out_num)
 	SW_1 = switch(switch_1)
 	SW_2 = switch(switch_2)
-    switch_read_on(out_num)
-    i = 0
-    while i < 100:
-        print(SW_1.get_switch_status(), SW2.get_switch_status())
-        time.sleep(0.1)
-        i= i+1
-    GPIO.cleanup()
+	switch_read_on(out_num)
+	i = 0
+	while i < 100:
+		print(SW_1.get_switch_status(), SW_2.get_switch_status())
+		time.sleep(0.1)
+		i= i+1
+	GPIO.cleanup()

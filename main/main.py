@@ -5,6 +5,8 @@ import switch
 import PySimpleGUI as sg
 import Screen
 import Callback
+import move
+import time
 #first sensor address
 addr=0x29
 #second sensor newaddress
@@ -17,8 +19,8 @@ switch_2_num = 26
 #switch outpit GPIO num
 switch_out = 19
 #init switch
-sensor.init_switch_output(switch_num)
-sensor.switch_read_on(switch_num)
+sensor.init_switch_output(switch_out)
+sensor.switch_read_on(switch_out)
 #motor PWM
 PWMA = 18
 #AIN1
@@ -47,7 +49,11 @@ switch_2 = switch.switch(switch_2_num)
 
 def call_back_event():
 	#change motor direction
-	#è¨î‰âÍÇ≥ÇÒë´
+	speed = motor.power
+	move.move(speed, 'backward', 'no', 0.6)
+	time.sleep(1)
+	move.move(speed, 'no', 'right', 0.6)
+	print("call back event")
 	print("call back event")
 
 #make callback instanse 
@@ -95,23 +101,29 @@ while True:
 		print(switch_2.get_sensor_status())
 	#change scroll bar
 	elif request == 'motor':
-		gui.update('input', values['motor'])
+		gui.update('input', event['motor'])
 	#change input Text value
 	elif request == 'input':
-		gui.update('motor', values['input'])
+		gui.update('motor', event['input'])
 	#change motor power
 	elif request == 'set':
-		gui.update('motor', values['input'])
-		motor.change_power(values['input'])
+		gui.update('motor', event['input'])
+		motor.change_power(event['input'])
 	#timeout event. always monitor sensor values.
-	#switch values change event can be detected through call back function.
+	#switch event change event can be detected through call back function.
 	elif request == 'timeout':
 		if(sens_1.get_sensor_status() < closed_value):
+			speed = motor.power
+			move.move(speed, 'backward', 'no', 0.6)
+			time.sleep(1)
+			move.move(speed, 'no', 'right', 0.6)
 			#motor change derection
-			#è¨î‰âÍÇ≥ÇÒë´
 		elif(sens_2.get_sensor_status() < closed_value):
 			#motor change derection
-			#è¨î‰âÍÇ≥ÇÒë´
+			speed = motor.power
+			move.move(speed, 'backward', 'no', 0.6)
+			time.sleep(1)
+			move.move(speed, 'no', 'right', 0.6)
 		
 		
 	

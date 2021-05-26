@@ -20,19 +20,19 @@ VL6180X_RESULT_ALS_VAL = 0x0050
 
 
 class sensor:
-	"""
-		sensor class
-					addr:address for I2C control
-				__read
-					I2C value read
-				__WriteByte
-					write C value from A address to B address 
-				__WriteByte16
-					hex write?
-				get_sensor_status()
-					get sensor values only distance
-		comment: before using multi sensor, must change address of sensor registor address
-	"""
+    """
+    sensor class
+    addr:address for I2C control
+        __read
+        I2C value read
+    __WriteByte
+        write C value from A address to B address 
+    __WriteByte16
+        hex write?
+    get_sensor_status()
+        get sensor values only distance
+    comment: before using multi sensor, must change address of sensor registor address
+    """
     def __init__(self, addr):
         if self.__read(addr,VL6180X_SYSTEM_FRESH_OUT_OF_RESET) == 1:
             self.__WriteByte(addr,0x0207, 0x01)
@@ -92,27 +92,27 @@ class sensor:
         
     def get_sensor_status(self):
         self.__WriteByte(self.addr,VL6180X_SYSRANGE_START, 0x01) #0x03 renzoku
-        time.sleep(0.01)  # 待ち時間が短くて治す予定の行のはず。
+        time.sleep(0.1)
         distance = self.__read(self.addr,VL6180X_RESULT_RANGE_VAL)
         self.__WriteByte(self.addr,VL6180X_SYSTEM_INTERRUPT_CLEAR, 0x07)
         return distance
-	def __read(addr,register16):
-		a1 = (register16 >> 8) & 0xFF
-		a0 = register16 & 0xFF
-		bus.write_i2c_block_data(addr, a1, [a0])
-		return bus.read_byte(addr)
+    def __read(addr,register16):
+        a1 = (register16 >> 8) & 0xFF
+        a0 = register16 & 0xFF
+        bus.write_i2c_block_data(addr, a1, [a0])
+        return bus.read_byte(addr)
  
-	def __WriteByte(addr,register16, data):
-		a1 = (register16 >> 8) & 0xFF
-		a0 = register16 & 0xFF
-		bus.write_i2c_block_data(addr, a1, [a0, (data & 0xFF)])
+    def __WriteByte(addr,register16, data):
+        a1 = (register16 >> 8) & 0xFF
+        a0 = register16 & 0xFF
+        bus.write_i2c_block_data(addr, a1, [a0, (data & 0xFF)])
 	 
-	def __WriteByte16(addr,register16, data16):
-		a1 = (register16 >> 8) & 0xFF
-		a0 = register16 & 0xFF
-		d1 = (data16 >> 8) & 0xFF
-		d0 = data16 & 0xFF
-		bus.write_i2c_block_data(addr, a1, [a0, d1, d0])
+    def __WriteByte16(addr,register16, data16):
+        a1 = (register16 >> 8) & 0xFF
+        a0 = register16 & 0xFF
+        d1 = (data16 >> 8) & 0xFF
+        d0 = data16 & 0xFF
+        bus.write_i2c_block_data(addr, a1, [a0, d1, d0])
     
  
 #main
