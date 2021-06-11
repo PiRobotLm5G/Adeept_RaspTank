@@ -16,7 +16,7 @@ class GUI:
                 self.window = sg.Window(title, layout)
         def show(self):
                 while True:
-                        event, values = self.window.read(timeout=1000, timeout_key ='timeout')
+                        event, values = self.window.read(timeout=50, timeout_key ='timeout')
                         if event is None:
                                 break
                         else:

@@ -12,7 +12,7 @@ def __WriteByte(register16, data):
  
 
 def change_addr(new_addr):
-	addr=0x29
+    addr=0x29
     gpio_reset = 21
     VL6180X_SLAVE_DEVICE_ADDRESS = 0x0212
     GPIO.setup(gpio_reset,GPIO.OUT)

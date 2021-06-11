@@ -5,6 +5,8 @@ import switch
 import PySimpleGUI as sg
 import Screen
 import Callback
+import move
+import time
 #first sensor address
 addr=0x29
 #second sensor newaddress
@@ -17,18 +19,18 @@ switch_2_num = 26
 #switch outpit GPIO num
 switch_out = 19
 #init switch
-sensor.init_switch_output(switch_num)
-sensor.switch_read_on(switch_num)
+switch.init_switch_output(switch_out)
+switch.switch_read_on(switch_out)
 #motor PWM
-PWMA = 18
+PWMA = 13
 #AIN1
-AIN1 = 27
+AIN1 = 5
 #AIN2
-AIN2 = 22
+AIN2 = 6
 #PWM ratio
-POWER = 50
+POWER = 30
 #change addr of sensor
-change.change_addr(new_addr)
+#change.change_addr(new_addr)
 
 
 
@@ -36,7 +38,7 @@ change.change_addr(new_addr)
 sens_1 = sensor.sensor(addr)
 sens_2 = sensor.sensor(new_addr)
 # if the sensor detect less than 10 mm, the event will occur.
-closed_value = 10
+closed_value = 50
 
 #motor instanse
 mt = motor.motor(AIN1, AIN2, PWMA, POWER)
@@ -45,15 +47,32 @@ mt = motor.motor(AIN1, AIN2, PWMA, POWER)
 switch_1 = switch.switch(switch_1_num)
 switch_2 = switch.switch(switch_2_num)
 
-def call_back_event():
-	#change motor direction
-	#è¨î‰âÍÇ≥ÇÒë´
-	print("call back event")
+#gloval foot move speed
+ft_speed = 30
+move.setup()
+"""
+def call_back_event_1():
+    #change motor direction
+    move.move(ft_speed, 'backward', 'no', 0.6)
+    time.sleep(1)
+    move.move(ft_speed, 'no', 'right', 0.6)
+    time.sleep(1)
+    move.move(ft_speed, 'forward', 'no', 0.6)
+    print("call back event_1")
+    
+def call_back_event_2():
+    #change motor direction
+    move.move(ft_speed, 'backward', 'no', 0.6)
+    time.sleep(1)
+    move.move(ft_speed, 'no', 'left', 0.6)
+    time.sleep(1)
+    move.move(ft_speed, 'forward', 'no', 0.6)
+    print("call back event_2")
 
 #make callback instanse 
-cb_1 = CallBack.Callback(switch_1_num, call_back_event)
-cb_2 = CallBack.Callback(switch_2_num, call_back_event)
-
+cb_1 = Callback.Callback(switch_1_num, call_back_event_1)
+cb_2 = Callback.Callback(switch_2_num, call_back_event_2)
+"""
 
 #Screen layout
 battery_bottun = [sg.Button('ON', key = 'on'), sg.Button('OFF', key = 'off')]
@@ -76,63 +95,76 @@ gui = Screen.GUI(title, layout)
 
 #main task
 while True:
-	request, event = gui.show()
-	#power on key
-	if request == 'on':
-		motor.forward()
-	#power off key
-	elif request == 'off':
-		gui.close()
-		motor.stop()
-		break
-	#get sensor value
-	elif request == 'sensor':
-		print(sens_1.get_sensor_status())
-		print(sens_2.get_sensor_status())
-	#get switch value
-	elif request == 'switch':
-		print(switch_1.get_sensor_status())
-		print(switch_2.get_sensor_status())
-	#change scroll bar
-	elif request == 'motor':
-		gui.update('input', values['motor'])
-	#change input Text value
-	elif request == 'input':
-		gui.update('motor', values['input'])
-	#change motor power
-	elif request == 'set':
-		gui.update('motor', values['input'])
-		motor.change_power(values['input'])
-	#timeout event. always monitor sensor values.
-	#switch values change event can be detected through call back function.
-	elif request == 'timeout':
-		if(sens_1.get_sensor_status() < closed_value):
-			#motor change derection
-			#è¨î‰âÍÇ≥ÇÒë´
-		elif(sens_2.get_sensor_status() < closed_value):
-			#motor change derection
-			#è¨î‰âÍÇ≥ÇÒë´
-		
-		
-	
-	
-		
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    request, event = gui.show()
+    #power on key
+    if request == 'on':
+        move.move(ft_speed, 'forward', 'no', 0.6)
+        time.sleep(1)
+        mt.forward()
+    #power off key
+    elif request == 'off':
+        gui.close()
+        mt.stop()
+        move.motorStop()
+        break
+    #get sensor value
+    elif request == 'sensor':
+        print(sens_1.get_sensor_status())
+        print(sens_2.get_sensor_status())
+    #get switch value
+    elif request == 'switch':
+        print(switch_1.get_switch_status())
+        print(switch_2.get_switch_status())
+    #change scroll bar
+    elif request == 'motor':
+        gui.update('input', event['motor'])
+    #change input Text value
+    elif request == 'input':
+        gui.update('motor', event['input'])
+    #change motor power
+    elif request == 'set':
+        gui.update('motor', event['input'])
+        mt.change_power(int(float(event['input'])))
+    #timeout event. always monitor sensor values.
+    #switch event change event can be detected through call back function.
+    elif request == 'timeout':
+        if(sens_1.get_sensor_status() > closed_value) or (switch_1.get_switch_status() != 1):
+            move.move(ft_speed, 'backward', 'no', 0.6)
+            time.sleep(1)
+            move.move(ft_speed, 'no', 'right', 0.6)
+            time.sleep(0.5)
+            move.move(ft_speed, 'forward', 'no', 0.6)
+            print("out desk_1")
+            #motor change derection
+        elif(sens_2.get_sensor_status() > closed_value) or (switch_2.get_switch_status() != 1):
+            #motor change derection
+            move.move(ft_speed, 'backward', 'no', 0.6)
+            time.sleep(1)
+            move.move(ft_speed, 'no', 'left', 0.6)
+            time.sleep(0.5)
+            move.move(ft_speed, 'forward', 'no', 0.6)
+            print("out desk_2")
+        
+        
+    
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
