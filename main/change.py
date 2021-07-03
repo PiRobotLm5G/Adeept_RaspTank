@@ -5,28 +5,46 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 bus = smbus.SMBus(1)
 
-def __WriteByte(register16, data):
+def __WriteByte(register16, addr, data):
     a1 = (register16 >> 8) & 0xFF
     a0 = register16 & 0xFF
-    bus.write_i2c_block_data(addr, a1, [a0, (data & 0xFF)])
- 
 
-def change_addr(new_addr):
-    addr=0x29
-    gpio_reset = 21
+    try:
+        bus.write_i2c_block_data(addr, a1, [a0, (data & 0xFF)])
+    except:
+        raise
+
+
+def change_addr(addr, new_addr, reset_pin):
     VL6180X_SLAVE_DEVICE_ADDRESS = 0x0212
-    GPIO.setup(gpio_reset,GPIO.OUT)
-    GPIO.output(gpio_reset,1)
-    __WriteByte(VL6180X_SLAVE_DEVICE_ADDRESS,new_addr)
+    GPIO.setup(reset_pin, GPIO.OUT)
+    GPIO.output(reset_pin,0)
     time.sleep(1)
-    GPIO.output(gpio_reset,0)
+    GPIO.output(reset_pin,1)
+    time.sleep(1)
+    if addr != new_addr:
+        __WriteByte(VL6180X_SLAVE_DEVICE_ADDRESS, addr, new_addr)
+    #time.sleep(1)
+
+    #GPIO.output(reset_pin,0)
  
 #init
 
 if __name__ == "__main__":
-    addr=0x29
-    new_addr=0x2a
-    change_addr(new_addr)
+    tof_orig_addr = 0x29
+    tof_right_addr = tof_orig_addr
+    tof_right_pin = 9
+    tof_left_addr = 0x2a
+    tof_left_pin = 21
+    tof_front_addr = 0x2b
+    tof_front_pin = 10 
+
+    #GPIO.setwarnings(False)
+
+    change_addr(tof_orig_addr, tof_left_addr, tof_left_pin)
+    change_addr(tof_orig_addr, tof_front_addr, tof_front_pin)
+    change_addr(tof_orig_addr, tof_right_addr, tof_right_pin) # power on
+
     #sda = new_address_read(VL6180X_SLAVE_DEVICE_ADDRESS)
     #print(sda,' id')
 

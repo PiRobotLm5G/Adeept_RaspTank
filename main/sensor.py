@@ -117,11 +117,15 @@ class sensor:
  
 #main
 if __name__ == "__main__":
-    addr=0x29
-    addr_second=0x2A
-    sens_1 = sensor(addr)
-    sens_2 = sensor(addr_second)
+    tof_orig_addr = 0x29
+    tof_right_addr = tof_orig_addr
+    tof_left_addr = 0x2a
+    tof_front_addr = 0x2b
+
+    sens_1 = sensor(tof_right_addr)
+    sens_2 = sensor(tof_left_addr)
+    sens_3 = sensor(tof_front_addr)
     for i in range (0, 100):
-        print(sens_1.get_sensor_status(), sens_2.get_sensor_status())
+        print(sens_1.get_sensor_status(), sens_2.get_sensor_status(), sens_3.get_sensor_status())
 #Copyright (c) 2014-2015 Arnie Weber. All rights reserved.
 

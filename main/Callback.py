@@ -35,11 +35,11 @@ if __name__ == '__main__':
         print("call back event")
     #make switch instanse
     #first switch input GPIO num
-    switch_1_num = 20
+    switch_1_num = 7
     #second switch input GPIO num
-    switch_2_num = 26
+    switch_2_num = 16
     #switch outpit GPIO num
-    switch_out = 19
+    switch_out = 24
     switch_1 = switch.switch(switch_1_num)
     switch_2 = switch.switch(switch_2_num)
 

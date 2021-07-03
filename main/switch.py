@@ -33,9 +33,9 @@ class switch:
  
 if __name__ == "__main__":
 	GPIO.setmode(GPIO.BCM)
-	switch_1 = 20
-	switch_2 = 26
-	out_num = 19
+	switch_1 = 7
+	switch_2 = 16
+	out_num = 24
 	init_switch_output(out_num)
 	SW_1 = switch(switch_1)
 	SW_2 = switch(switch_2)

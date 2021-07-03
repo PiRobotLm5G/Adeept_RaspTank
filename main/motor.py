@@ -67,9 +67,9 @@ class motor:
         
 #forward_motor(75)
 if __name__ == "__main__":
-    PWMA = 13
-    AIN1 = 5
-    AIN2 = 6
+    PWMA = 25
+    AIN1 = 22
+    AIN2 = 23
     c_step = 10
     POWER = 50
     GPIO.setmode(GPIO.BCM)

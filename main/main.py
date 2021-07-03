@@ -11,32 +11,47 @@ import time
 addr=0x29
 #second sensor newaddress
 new_addr=0x2a
+new_reset=21
+#third sensor newaddress
+third_addr=0x2b
+third_reset=15
+
+tof_orig_addr = 0x29
+tof_right_addr = tof_orig_addr
+tof_right_pin = 9
+tof_left_addr = 0x2a
+tof_left_pin = 21
+tof_front_addr = 0x2b
+tof_front_pin = 10 
+
+#GPIO.setwarnings(False)
 
 #first switch input GPIO num
-switch_1_num = 20
+switch_1_num = 7
 #second switch input GPIO num
-switch_2_num = 26
+switch_2_num = 16
 #switch outpit GPIO num
-switch_out = 19
+switch_out = 24
 #init switch
 switch.init_switch_output(switch_out)
 switch.switch_read_on(switch_out)
 #motor PWM
-PWMA = 13
+PWMA = 25
 #AIN1
-AIN1 = 5
+AIN1 = 22
 #AIN2
-AIN2 = 6
+AIN2 = 23
 #PWM ratio
 POWER = 30
 #change addr of sensor
-#change.change_addr(new_addr)
-
-
+change.change_addr(tof_orig_addr, tof_left_addr, tof_left_pin)
+change.change_addr(tof_orig_addr, tof_front_addr, tof_front_pin)
+change.change_addr(tof_orig_addr, tof_right_addr, tof_right_pin) # power on
 
 #make instanse sensor
-sens_1 = sensor.sensor(addr)
-sens_2 = sensor.sensor(new_addr)
+sens_1 = sensor.sensor(tof_right_addr)
+sens_2 = sensor.sensor(tof_left_addr)
+sens_3 = sensor.sensor(tof_front_addr)
 # if the sensor detect less than 10 mm, the event will occur.
 closed_value = 50
 
@@ -111,6 +126,7 @@ while True:
     elif request == 'sensor':
         print(sens_1.get_sensor_status())
         print(sens_2.get_sensor_status())
+        print(sens_3.get_sensor_status())
     #get switch value
     elif request == 'switch':
         print(switch_1.get_switch_status())
@@ -131,19 +147,27 @@ while True:
         if(sens_1.get_sensor_status() > closed_value) or (switch_1.get_switch_status() != 1):
             move.move(ft_speed, 'backward', 'no', 0.6)
             time.sleep(1)
-            move.move(ft_speed, 'no', 'right', 0.6)
+            move.move(ft_speed, 'no', 'left', 0.6)
             time.sleep(0.5)
             move.move(ft_speed, 'forward', 'no', 0.6)
-            print("out desk_1")
+            print("out desk_1(right)")
             #motor change derection
         elif(sens_2.get_sensor_status() > closed_value) or (switch_2.get_switch_status() != 1):
             #motor change derection
             move.move(ft_speed, 'backward', 'no', 0.6)
             time.sleep(1)
+            move.move(ft_speed, 'no', 'right', 0.6)
+            time.sleep(0.5)
+            move.move(ft_speed, 'forward', 'no', 0.6)
+            print("out desk_2(left)")
+        elif(sens_3.get_sensor_status() > closed_value):
+            #motor change derection
+            #move.move(ft_speed, 'backward', 'no', 0.6)
+            #time.sleep(1)
             move.move(ft_speed, 'no', 'left', 0.6)
             time.sleep(0.5)
             move.move(ft_speed, 'forward', 'no', 0.6)
-            print("out desk_2")
+            print("out desk_3(front)")
         
         
     
